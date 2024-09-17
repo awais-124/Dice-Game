@@ -9,7 +9,12 @@ const btnHold = document.querySelector('.btn--hold');
 const btnNew = document.querySelector('.btn--new');
 const btnRoll = document.querySelector('.btn--roll');
 const dice = document.querySelector('.dice');
-let scores, currentScore, activePlayer, playing;
+
+let scores,
+  currentScore,
+  activePlayer,
+  playing = false;
+
 const switchPlayer = function () {
   document.getElementById(`current--${activePlayer}`).textContent = 0;
   currentScore = 0;
@@ -17,6 +22,7 @@ const switchPlayer = function () {
   player0.classList.toggle('player--active');
   player1.classList.toggle('player--active');
 };
+
 const initializingGame = function () {
   scores = [0, 0];
   currentScore = 0;
@@ -32,30 +38,38 @@ const initializingGame = function () {
   player0.classList.add('player--active');
   player1.classList.remove('player--active');
 };
+
 initializingGame();
 
-btnRoll.addEventListener('click', function () {
+btnRoll.addEventListener('click', () => {
   if (playing) {
     const diceRoll = Math.floor(Math.random() * 6) + 1;
 
     dice.classList.remove('hidden');
     dice.src = `dice-${diceRoll}.png`;
 
-    if (diceRoll !== 1) {
+    if (diceRoll !== 6) {
       currentScore += diceRoll;
       document.getElementById(`current--${activePlayer}`).textContent =
         currentScore;
+      if (diceRoll === 1) {
+          scores[activePlayer] -= currentScore;
+	  currentScore = 0;
+          document.getElementById(`current--${activePlayer}`).textContent = currentScore;
+	  document.getElementById(`score--${activePlayer}`).textContent = scores[activePlayer]; 
+	}	
     } else {
       switchPlayer();
     }
   }
 });
-btnHold.addEventListener('click', function () {
+
+btnHold.addEventListener('click', () => {
   if (playing) {
     scores[activePlayer] += currentScore;
     document.getElementById(`score--${activePlayer}`).textContent =
       scores[activePlayer];
-    if (scores[activePlayer] >= 50) {
+    if (scores[activePlayer] >= 100) {
       playing = false;
       document
         .querySelector(`.player--${activePlayer}`)
@@ -68,10 +82,5 @@ btnHold.addEventListener('click', function () {
     }
   }
 });
-btnNew.addEventListener('click', function () {
-  if (!playing) {
-    initializingGame();
-  } else {
-    alert('🤷🤷🤷🤷🤷🤷🤷');
-  }
-});
+
+btnNew.addEventListener('click', () => initializingGame());
